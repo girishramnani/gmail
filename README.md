@@ -159,7 +159,7 @@ There is also few shortcuts to mark messages quickly:
 
 ## Copyright
 
-* Copyright (c) 2013 Charlie Guo
+* Copyright (c) 2017 Girish Ramnani
 
 See LICENSE for details.
 
