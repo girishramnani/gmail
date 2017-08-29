@@ -18,7 +18,7 @@ Heavily inspired by [Kriss "nu7hatch" Kowalik's GMail for Ruby library](https://
 For now, installation is manual (`pip` support not yet implemented). Supports python 2 and pypy.
 ```
 
-git clone git://github.com/charlierguo/gmail.git
+git clone git://github.com/girishramnani/gmail.git
 
 ```
 
