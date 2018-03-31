@@ -2,13 +2,19 @@ from .message import Message
 from .utf import encode as encode_utf7, decode as decode_utf7
 
 
-class Mailbox():
+class Mailbox:
 
     def __init__(self, gmail, name="INBOX"):
         self.name = name
         self.gmail = gmail
         self.date_format = "%d-%b-%Y"
         self.messages = {}
+
+    def __len__(self):
+        return self.count()
+
+    def __repr__(self):
+        return '<Mailbox {}>'.format(self.name)
 
     @property
     def external_name(self):
@@ -22,7 +28,10 @@ class Mailbox():
             del vars(self)["external_name"]
         self.name = decode_utf7(value)
 
-    def mail(self, prefetch=False, **kwargs):
+    def get_mail(self,
+                 prefetch=False,
+                 **kwargs):
+
         search = ['ALL']
 
         kwargs.get('read') and search.append('SEEN')
@@ -39,8 +48,10 @@ class Mailbox():
 
         kwargs.get('before') and search.extend(
             ['BEFORE', kwargs.get('before').strftime(self.date_format)])
+
         kwargs.get('after') and search.extend(
             ['SINCE', kwargs.get('after').strftime(self.date_format)])
+
         kwargs.get('on') and search.extend(
             ['ON', kwargs.get('on').strftime(self.date_format)])
 
@@ -84,7 +95,7 @@ class Mailbox():
         return emails
 
     def count(self, **kwargs):
-        return len(self.mail(**kwargs))
+        return len(self.get_mail(**kwargs))
 
     def cached_messages(self):
         return self.messages
