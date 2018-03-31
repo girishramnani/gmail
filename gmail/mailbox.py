@@ -71,7 +71,6 @@ class Mailbox:
         kwargs.get('query') and search.extend([kwargs.get('query')])
 
         emails = []
-        # print search
         response, data = self.gmail.imap.uid('SEARCH', *search)
         if response == 'OK':
             # filter out empty strings
