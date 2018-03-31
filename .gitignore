@@ -90,3 +90,5 @@ ENV/
 
 # visual studio code settings
 .vscode
+
+*.xml
