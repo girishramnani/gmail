@@ -35,8 +35,9 @@ def parse_headers(message):
 
 
 def parse_flags(headers):
-    return list(ParseFlags(bytes(headers, 'ascii')))
-    # flags = re.search(r'FLAGS \(([^\)]*)\)', headers).groups(1)[0].split(' ')
+    if sys.version_info[0] == 3:
+        headers = bytes(headers, "ascii")
+    return list(ParseFlags(headers))
 
 
 def parse_labels(headers):
@@ -54,10 +55,12 @@ def parse_subject(encoded_subject):
 
 
 class Message:
-
     sent_at = None
 
-    def __init__(self, mailbox, uid):
+    def __init__(self,
+                 mailbox,
+                 uid):
+
         self.uid = uid
         self.mailbox = mailbox
         self.gmail = mailbox.gmail if mailbox else None
@@ -86,7 +89,6 @@ class Message:
         self.message_id = None
 
         self.attachments = None
-        self.fetch()
 
     def __repr__(self):
         return '<Message {} from {}: "{}">'.format(self.string_sent_at,
@@ -228,9 +230,9 @@ class Message:
 
     def parse(self, raw_message):
         raw_headers = raw_message[0].decode()
-        raw_email = raw_message[1].decode()
+        raw_email = raw_message[1]
 
-        self.message = email.message_from_string(raw_email)
+        self.message = email.message_from_bytes(raw_email)
         self.headers = parse_headers(self.message)
 
         self.to = self.message['to']
@@ -263,14 +265,14 @@ class Message:
                 r'X-GM-MSGID (\d+)', raw_headers).groups(1)[0]
 
         # Parse attachments into attachment objects array for this message
-        self.attachments = [
+        self.attachments = [a for a in [
 
             Attachment(attachment)
             for attachment in self.message._payload
             if not isinstance(attachment, str)
             if attachment.get('Content-Disposition') is not None
 
-        ]
+        ] if a]
 
     def fetch(self):
         if not self.message:
@@ -314,12 +316,19 @@ Message.string_date = Message.string_sent_at
 
 
 class Attachment:
+
     def __init__(self, attachment):
         self.name = attachment.get_filename()
         # Raw file data
         self.payload = attachment.get_payload(decode=True)
         # Filesize in kilobytes
-        self.size = int(round(len(self.payload) / 1000.0))
+        try:
+            self.size = int(round(len(self.payload) / 1000.0))
+        except TypeError:
+            self.size = 0
+
+    def __bool__(self):
+        return bool(self.size)
 
     def save(self, path=None):
         if path is None:

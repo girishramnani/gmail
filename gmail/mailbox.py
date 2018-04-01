@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 from .message import Message
 from .utf import encode as encode_utf7, decode as decode_utf7
 
@@ -11,7 +13,7 @@ class Mailbox:
         self.messages = {}
 
     def __repr__(self):
-        return '<Mailbox {}>'.format(self.name)
+        return '<Mailbox {}>'.format(self.external_name)
 
     @property
     def external_name(self):
@@ -66,18 +68,23 @@ class Mailbox:
 
         kwargs.get('label') and search.extend(
             ['X-GM-LABELS', kwargs.get('label')])
-        kwargs.get('attachment') and search.extend(['HAS', 'attachment'])
 
-        kwargs.get('query') and search.extend([kwargs.get('query')])
+        kwargs.get('query') and search.extend(
+            ['X-GM-RAW', kwargs.get('query')])
 
         emails = []
+
         response, data = self.gmail.imap.uid('SEARCH', *search)
         if response == 'OK':
-            # filter out empty strings
-            uids = [_f for _f in data[0].split(b' ') if _f]
 
-            for uid in uids:
-                if not self.messages.get(uid):
+            # filter out empty strings
+            uids = [_f
+                    for _f in data[0].split(b' ')
+                    if _f]
+
+            print('creating Message objects and putting them in self.messages dict')
+            for uid in tqdm(uids):
+                if uid not in self.messages:
                     self.messages[uid] = Message(self, uid)
                 emails.append(self.messages[uid])
 
