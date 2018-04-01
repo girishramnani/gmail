@@ -10,14 +10,17 @@ to = os.environ["GMAIL_TO"]
 def test_smtp_login():
     gm = gmail.Gmail()
     gm._connect_smtp()
-    gm.smtp.login(email, password)
+    gm.smtp.login(email,
+                  password)
 
 
 def test_smtp_send_text_email():
     gm = gmail.Gmail()
 
     gm.login(email, password)
-    message = Message.create_message("Hello", to, text="Hello world")
+    message = Message.create("Hello",
+                             to,
+                             text="Hello world")
     gm.send(message)
 
 
@@ -39,6 +42,7 @@ def test_that_emails_have_content():
     assert len(emails) > 0
 
     first_email = emails[0]
+    first_email.fetch()
     assert first_email.subject is not None
     assert first_email.body is not None
 
