@@ -26,7 +26,7 @@ git clone git://github.com/girishramnani/gmail.git
 
 * Search emails
 * Read emails 
-* Emails: get_label, archive, delete, mark as read/unread/spam, star
+* Emails: label, archive, delete, mark as read/unread/spam, star
 * Manage labels
 
 ## Basic usage
@@ -104,7 +104,7 @@ Every message in a conversation/thread will come as a separate message.
     
 ### Working with emails
 
-__Important: calls to `get_mail()` will return a list of empty email messages (with unique IDs). To work with labels, headers, subjects, and bodies, call `fetch()` on an individual message. You can call get_mail with `prefetch=True`, which will fetch the bodies automatically.__
+__Important: calls to `get_mail()` will return a list of empty email messages (with unique IDs). To work with labels, headers, subjects, and bodies, call `fetch()` on an individual message. You can call `get_mail` with `prefetch=True`, which will fetch the bodies automatically.__
 
     unread = g.inbox.get_mail(unread=True)
     print unread[0].body
@@ -131,7 +131,7 @@ You can use also `get_label` method instead of `get_mailbox`:
 
     g.get_label("Faxes").get_mail()
 
-Add a get_label to a message:
+Add a label to a message:
 
     email.add_label("Faxes")
 
@@ -155,11 +155,11 @@ There are also few shortcuts to mark messages quickly:
 ### Roadmap
 
 * Write tests
-* Better get_label support
+* Better support
 * Moving between labels/mailboxes
 * Intuitive thread fetching & manipulation
 * solve issues on the python 3 part ( as it was generated using `2to3` script )
-* ~~Sending get_mail via Google's SMTP servers (for now, check out https://github.com/paulchakravarti/gmail-sender)~~
+* ~~Sending via Google's SMTP servers (for now, check out https://github.com/paulchakravarti/gmail-sender)~~
 
 ## Copyright
 
