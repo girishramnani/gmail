@@ -121,7 +121,8 @@ __Important: calls to `get_mail()` will return a list of empty email messages (w
 
 Mark news past a certain date as read and archive it:
 
-    emails = g.inbox.get_mail(before=datetime.date(2013, 4, 18), sender="news@nbcnews.com")
+    emails = g.inbox.get_mail(before=datetime.date(2013, 4, 18),
+                              sender="news@nbcnews.com")
     for email in emails:
         email.read() # see other Message methods below
         email.archive()

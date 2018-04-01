@@ -1,5 +1,3 @@
-from tqdm import tqdm
-
 from .message import Message
 from .utf import encode as encode_utf7, decode as decode_utf7
 
@@ -82,8 +80,7 @@ class Mailbox:
                     for _f in data[0].split(b' ')
                     if _f]
 
-            print('creating Message objects and putting them in self.messages dict')
-            for uid in tqdm(uids):
+            for uid in uids:
                 if uid not in self.messages:
                     self.messages[uid] = Message(self, uid)
                 emails.append(self.messages[uid])

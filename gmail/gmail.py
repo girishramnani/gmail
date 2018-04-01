@@ -106,7 +106,7 @@ class Gmail:
             mailbox_name = bytes(mailbox_name, "ascii")
 
         mailbox = self.mailboxes.get(mailbox_name) \
-                  or self.mailboxes.get(encode_utf7(mailbox_name))
+                      or self.mailboxes.get(encode_utf7(mailbox_name))
 
         if mailbox and not self.current_mailbox == mailbox_name:
             self.use_mailbox(quoted_mailbox_name or mailbox_name)
@@ -116,7 +116,7 @@ class Gmail:
     def create_mailbox(self, mailbox_name):
         mailbox = self.mailboxes.get(mailbox_name)
         if not mailbox:
-            create(mailbox_name)
+            self.imap.create(mailbox_name)
             mailbox = Mailbox(self, mailbox_name)
             self.mailboxes[mailbox_name] = mailbox
 
@@ -222,7 +222,8 @@ class Gmail:
     def labels(self, require_unicode=False):
         keys = list(self.mailboxes.keys())
         if require_unicode:
-            keys = [decode_utf7(key) for key in keys]
+            keys = [decode_utf7(key)
+                    for key in keys]
         return keys
 
     @property
