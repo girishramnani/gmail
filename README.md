@@ -155,7 +155,7 @@ There are also few shortcuts to mark messages quickly:
 ### Roadmap
 
 * Write tests
-* Better support
+* Better label support
 * Moving between labels/mailboxes
 * Intuitive thread fetching & manipulation
 * solve issues on the python 3 part ( as it was generated using `2to3` script )
