@@ -70,6 +70,13 @@ class Mailbox:
         kwargs.get('query') and search.extend(
             ['X-GM-RAW', kwargs.get('query')])
 
+        kwargs.get('uid') and search.extend(['UID', kwargs['uid']])
+
+        if kwargs.get('uids'):
+            for uid in kwargs.get('uids'):
+                search.append('UID')
+                search.append(uid)
+
         emails = []
 
         response, data = self.gmail.imap.uid('SEARCH', *search)
