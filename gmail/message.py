@@ -23,37 +23,6 @@ else:
     unicode_type = str
 
 
-def charset(s):
-    return 'utf-8' if isinstance(s, unicode_type) else 'us-ascii'
-
-
-def parse_headers(message):
-    hdrs = {}
-    for hdr in list(message.keys()):
-        hdrs[hdr] = message[hdr]
-    return hdrs
-
-
-def parse_flags(headers):
-    if sys.version_info[0] == 3:
-        headers = bytes(headers, "ascii")
-    return list(ParseFlags(headers))
-
-
-def parse_labels(headers):
-    if re.search(r'X-GM-LABELS \(([^\)]+)\)', headers):
-        labels = re.search(
-            r'X-GM-LABELS \(([^\)]+)\)', headers).groups(1)[0].split(' ')
-        return [l.replace('"', '') for l in labels]
-    else:
-        return list()
-
-
-def parse_subject(encoded_subject):
-    dh = decode_header(encoded_subject)
-    return ''.join([str(t[0]) for t in dh])
-
-
 class Message:
     sent_at = None
 
@@ -157,6 +126,12 @@ class Message:
         message['Subject'] = subject
 
         return message
+
+    @property
+    def from_(self):
+        if '<' in self.fr and '>' in self.fr:
+            return self.fr.split('<')[-1].replace('>', '')
+        return self.fr
 
     @property
     def is_read(self):
@@ -348,3 +323,35 @@ class Attachment:
 
         with open(path, 'wb') as f:
             f.write(self.payload)
+
+
+def charset(s):
+    return 'utf-8' if isinstance(s, unicode_type) else 'us-ascii'
+
+
+def parse_headers(message):
+    hdrs = {}
+    for hdr in list(message.keys()):
+        hdrs[hdr] = message[hdr]
+    return hdrs
+
+
+def parse_flags(headers):
+    if sys.version_info[0] == 3:
+        headers = bytes(headers, "ascii")
+    return list(ParseFlags(headers))
+
+
+def parse_labels(headers):
+    if re.search(r'X-GM-LABELS \(([^\)]+)\)', headers):
+        labels = re.search(
+            r'X-GM-LABELS \(([^\)]+)\)', headers).groups(1)[0].split(' ')
+        return [l.replace('"', '') for l in labels]
+    else:
+        return list()
+
+
+def parse_subject(encoded_subject):
+    dh = decode_header(encoded_subject)
+    return ''.join([str(t[0]) for t in dh])
+

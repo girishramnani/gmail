@@ -42,20 +42,13 @@ class Mailbox:
         kwargs.get('draft') and search.append('DRAFT')
         kwargs.get('undraft') and search.append('UNDRAFT')
 
-        kwargs.get('before') and search.extend(
-            ['BEFORE', kwargs.get('before').strftime(self.date_format)])
-
-        kwargs.get('after') and search.extend(
-            ['SINCE', kwargs.get('after').strftime(self.date_format)])
-
-        kwargs.get('on') and search.extend(
-            ['ON', kwargs.get('on').strftime(self.date_format)])
-
         kwargs.get('header') and search.extend(
             ['HEADER', kwargs.get('header')[0], kwargs.get('header')[1]])
 
         kwargs.get('sender') and search.extend(['FROM', kwargs.get('sender')])
         kwargs.get('fr') and search.extend(['FROM', kwargs.get('fr')])
+        kwargs.get('from') and search.extend(['FROM', kwargs.get('from')])
+        kwargs.get('not_from') and search.extend(['NOT FROM', kwargs.get('not_from')])
         kwargs.get('to') and search.extend(['TO', kwargs.get('to')])
         kwargs.get('cc') and search.extend(['CC', kwargs.get('cc')])
 
@@ -68,6 +61,23 @@ class Mailbox:
 
         kwargs.get('query') and search.extend(
             ['X-GM-RAW', kwargs.get('query')])
+
+        if 'on' in kwargs and isinstance(kwargs['on'], datetime.datetime):
+            kwargs['on'] = kwargs['on'].date()
+        if 'before' in kwargs and isinstance(kwargs['before'], datetime.datetime):
+            kwargs['before'] = kwargs['before'].date()
+        if 'after' in kwargs and isinstance(kwargs['after'], datetime.datetime):
+            kwargs['after'] = kwargs['after'].date()
+
+        kwargs.get('before') and search.extend(
+            ['BEFORE', kwargs.get('before').strftime(self.date_format)])
+
+        kwargs.get('after') and search.extend(
+            ['SINCE', kwargs.get('after').strftime(self.date_format)])
+
+        kwargs.get('on') and search.extend(
+            ['ON', kwargs.get('on').strftime(self.date_format)])
+
 
         kwargs.get('uid') and search.extend(['UID', kwargs['uid']])
 
