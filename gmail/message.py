@@ -95,6 +95,10 @@ class Message:
                                                    self.fr,
                                                    self.subject)
 
+    def __getattr__(self, item):
+        self.fetch()
+        return getattr(self, item)
+
     @staticmethod
     def create(subject,
                to,
