@@ -26,7 +26,6 @@ class Mailbox:
         self.name = decode_utf7(value)
 
     def get_mail(self,
-                 prefetch=False,
                  **kwargs):
 
         search = ['ALL']
@@ -91,13 +90,6 @@ class Mailbox:
                 if uid not in self.messages:
                     self.messages[uid] = Message(self, uid)
                 emails.append(self.messages[uid])
-
-            if prefetch and len(emails) > 0:
-                messages_dict = {}
-                for email in emails:
-                    messages_dict[email.uid] = email
-                self.messages.update(
-                    self.gmail.fetch_multiple_messages(messages_dict))
 
         return emails
 

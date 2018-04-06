@@ -109,16 +109,6 @@ Every message in a conversation/thread will come as a separate message.
     
 ### Working with emails
 
-__Important: calls to `get_mail()` will return a list of empty email messages (with unique IDs). To work with labels, headers, subjects, and bodies, call `fetch()` on an individual message. You can call `get_mail` with `prefetch=True`, which will fetch the bodies automatically.__
-
-    unread = g.inbox.get_mail(unread=True)
-    print unread[0].body
-    # None
-
-    unread[0].fetch()
-    print unread[0].body
-    # Dear ...,
-
 Mark news past a certain date as read and archive it:
 
     emails = g.inbox.get_mail(before=datetime.date(2013, 4, 18),

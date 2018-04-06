@@ -334,6 +334,9 @@ class Attachment:
     def __bool__(self):
         return bool(self.size)
 
+    def __repr__(self):
+        return f'<Attachment {self.name}'
+
     def save(self, path=None):
         if path is None:
             # Save as name of attachment if there is no path specified
