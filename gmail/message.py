@@ -60,7 +60,7 @@ class Message:
         self.attachments = None
 
     def __repr__(self):
-        return '<Message {uid}>'.format(self.uid)
+        return f'<Message {self.uid}>'
 
     def __getattr__(self, item):
         self.fetch()
