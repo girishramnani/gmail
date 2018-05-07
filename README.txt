@@ -63,11 +63,13 @@ You can also check if you are logged in at any time:
 
 ### Sending email 
 
-    from gmail import Gmail, Message 
+    from gmail import Gmail, Message
     g = Gmail()
     g.login(username, password)
 
-    message = Message.create("Hello","test@test.com",text="Hello world")
+    message = Message.create("Hello",
+                             "test@test.com",
+                             text="Hello world")
     g.send(message)
 
 
@@ -82,55 +84,48 @@ If you have already received an [OAuth2 access token from Google](https://develo
     
 Get all messages in your inbox:
 
-    g.inbox().mail()
+    g.inbox.get_mail()
 
 Get messages that fit some criteria:
 
-    g.inbox().mail(after=datetime.date(2013, 6, 18), before=datetime.date(2013, 8, 3))
-    g.inbox().mail(on=datetime.date(2009, 1, 1)
-    g.inbox().mail(sender="myfriend@gmail.com") # "from" is reserved, use "fr" or "sender"
-    g.inbox().mail(to="directlytome@gmail.com")
+    g.inbox.get_mail(after=datetime.date(2013, 6, 18), before=datetime.date(2013, 8, 3))
+    g.inbox.get_mail(on=datetime.date(2009, 1, 1)
+    g.inbox.get_mail(sender="myfriend@gmail.com") # "from" is reserved, use "fr" or "sender"
+    g.inbox.get_mail(to="directlytome@gmail.com")
 
 Combine flags and options:
 
-    g.inbox().mail(unread=True, sender="myboss@gmail.com")
+    g.inbox.get_mail(unread=True, sender="myboss@gmail.com")
     
 Browsing labeled emails is similar to working with your inbox.
 
-    g.mailbox('Urgent').mail()
+    g.get_mailbox('Urgent').get_mail()
     
 Every message in a conversation/thread will come as a separate message.
 
-    g.inbox().mail(unread=True, before=datetime.date(2013, 8, 3) sender="myboss@gmail.com")
+    g.inbox.get_mail(unread=True,
+                     before=datetime.date(2013, 8, 3),
+                     sender="myboss@gmail.com")
     
 ### Working with emails
 
-__Important: calls to `mail()` will return a list of empty email messages (with unique IDs). To work with labels, headers, subjects, and bodies, call `fetch()` on an individual message. You can call mail with `prefetch=True`, which will fetch the bodies automatically.__
-
-    unread = g.inbox().mail(unread=True)
-    print unread[0].body
-    # None
-
-    unread[0].fetch()
-    print unread[0].body
-    # Dear ...,
-
 Mark news past a certain date as read and archive it:
 
-    emails = g.inbox().mail(before=datetime.date(2013, 4, 18), sender="news@nbcnews.com")
+    emails = g.inbox.get_mail(before=datetime.date(2013, 4, 18),
+                              sender="news@nbcnews.com")
     for email in emails:
-        email.read() # can also unread(), delete(), spam(), or star()
+        email.read() # see other Message methods below
         email.archive()
 
 Delete all emails from a certain person:
 
-    emails = g.inbox().mail(sender="junkmail@gmail.com")
+    emails = g.inbox.get_mail(sender="junkmail@gmail.com")
     for email in emails:
         email.delete()
      
-You can use also `label` method instead of `mailbox`: 
+You can use also `get_label` method instead of `get_mailbox`:
 
-    g.label("Faxes").mail()
+    g.get_label("Faxes").get_mail()
 
 Add a label to a message:
 
@@ -143,13 +138,25 @@ Download message attachments:
         print 'Size: ' + str(attachment.size) + ' KB'
         attachment.save('attachments/' + attachment.name)
     
-There is also few shortcuts to mark messages quickly:
+There are also few shortcuts to mark messages quickly:
 
     email.read()
+    email.mark_as_read() # alias of email.read()
     email.unread()
+    email.mark_as_unread() # alias of email.unread()
     email.spam()
     email.star()
     email.unstar()
+
+
+### Significant API changes in May 2018
+
+* Mailboxes are now accessed via properties (e.g. `inbox = g.inbox` instead of `g.inbox()`) rather than methods.
+* For clarity, the `Mailbox.mail()` method is now called `Mailbox.get_mail()` to emphasize that it's a method, not a property.
+* Similarly, `Mailbox.label()` is now `Mailbox.get_label()`.
+* There's no need to call `fetch()` on a `Message`, since any attempt to access an attribute of a `Message` will automatically trigger `fetch()`, lazily loading the data for that `Message` courtesy of `Message.__getattr__`.
+* `uid` is now supported as a keyword argument for `Mailbox.get_mail()`.
+
 
 ### Roadmap
 
@@ -158,7 +165,7 @@ There is also few shortcuts to mark messages quickly:
 * Moving between labels/mailboxes
 * Intuitive thread fetching & manipulation
 * solve issues on the python 3 part ( as it was generated using `2to3` script )
-* ~~Sending mail via Google's SMTP servers (for now, check out https://github.com/paulchakravarti/gmail-sender)~~
+* ~~Sending via Google's SMTP servers (for now, check out https://github.com/paulchakravarti/gmail-sender)~~
 
 ## Copyright
 

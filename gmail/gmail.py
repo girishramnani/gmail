@@ -1,21 +1,20 @@
-from email.utils import parseaddr, getaddresses
 import imaplib
-import itertools
 import logging
 import re
 import smtplib
 from smtplib import SMTPResponseException, SMTPServerDisconnected, SMTPAuthenticationError
+import sys
 
 from .mailbox import Mailbox
 from .utf import encode as encode_utf7, decode as decode_utf7
 from .exceptions import *
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class Gmail():
+class Gmail:
     # GMail IMAP defaults
     GMAIL_IMAP_HOST = 'imap.gmail.com'
     GMAIL_IMAP_PORT = 993
@@ -74,11 +73,6 @@ class Gmail():
 
     def _connect_smtp(self, raise_errors=True):
 
-        # self.smtp = smtplib.SMTP(self.server,self.port)
-        # self.smtp.set_debuglevel(self.debug)
-        # self.smtp.ehlo()
-        # self.smtp.starttls()
-        # self.smtp.ehlo()
         self.smtp = smtplib.SMTP(self.GMAIL_SMTP_HOST, self.GMAIL_SMTP_PORT)
         self.smtp.set_debuglevel(self.debug)
 
@@ -98,20 +92,24 @@ class Gmail():
                 mailbox.external_name = mailbox_name
                 self.mailboxes[mailbox_name] = mailbox
 
-        logger.debug('self.mailboxes:\n{}'.format(self.mailboxes))
-
     def use_mailbox(self, mailbox):
         if mailbox:
             self.imap.select(mailbox)
         self.current_mailbox = mailbox
 
-    def mailbox(self, mailbox_name):
-        if mailbox_name not in self.mailboxes:
-            mailbox_name = encode_utf7(mailbox_name)
-        mailbox = self.mailboxes.get(mailbox_name)
+    def get_mailbox(self, mailbox_name):
+
+        quoted_mailbox_name = None
+
+        if sys.version_info[0] == 3:
+            quoted_mailbox_name = bytes('"' + mailbox_name + '"', 'ascii')
+            mailbox_name = bytes(mailbox_name, "ascii")
+
+        mailbox = self.mailboxes.get(mailbox_name) \
+                      or self.mailboxes.get(encode_utf7(mailbox_name))
 
         if mailbox and not self.current_mailbox == mailbox_name:
-            self.use_mailbox(mailbox_name)
+            self.use_mailbox(quoted_mailbox_name or mailbox_name)
 
         return mailbox
 
@@ -197,11 +195,11 @@ class Gmail():
         self.imap.logout()
         self.logged_in = False
 
-    def label(self, label_name):
-        return self.mailbox(label_name)
+    def get_label(self, label_name):
+        return self.get_mailbox(label_name)
 
     def find(self, mailbox_name="[Gmail]/All Mail", **kwargs):
-        box = self.mailbox(mailbox_name)
+        box = self.get_mailbox(mailbox_name)
         return box.mail(**kwargs)
 
     def copy(self, uid, to_mailbox, from_mailbox=None):
@@ -209,41 +207,37 @@ class Gmail():
             self.use_mailbox(from_mailbox)
         self.imap.uid('COPY', uid, to_mailbox)
 
-    def fetch_multiple_messages(self, messages):
-        fetch_str = ','.join(list(messages.keys()))
-        response, results = self.imap.uid(
-            'FETCH', fetch_str, '(BODY.PEEK[] FLAGS X-GM-THRID X-GM-MSGID X-GM-LABELS)')
-        for index in range(len(results) - 1):
-            raw_message = results[index]
-            if re.search(r'UID (\d+)', raw_message[0]):
-                uid = re.search(r'UID (\d+)', raw_message[0]).groups(1)[0]
-                messages[uid].parse(raw_message)
-
-        return messages
-
     def labels(self, require_unicode=False):
         keys = list(self.mailboxes.keys())
         if require_unicode:
-            keys = [decode_utf7(key) for key in keys]
+            keys = [decode_utf7(key)
+                    for key in keys]
         return keys
 
+    @property
     def inbox(self):
-        return self.mailbox(bytes("INBOX", "ascii"))
+        return self.get_mailbox("INBOX")
 
+    @property
     def spam(self):
-        return self.mailbox(bytes("[Gmail]/Spam"))
+        return self.get_mailbox("[Gmail]/Spam")
 
+    @property
     def starred(self):
-        return self.mailbox(bytes("[Gmail]/Starred"))
+        return self.get_mailbox("[Gmail]/Starred")
 
+    @property
     def all_mail(self):
-        return self.mailbox(bytes("[Gmail]/All Mail"))
+        return self.get_mailbox("[Gmail]/All Mail")
 
+    @property
     def sent_mail(self):
-        return self.mailbox(bytes("[Gmail]/Sent Mail"))
+        return self.get_mailbox("[Gmail]/Sent Mail")
 
+    @property
     def important(self):
-        return self.mailbox(bytes("[Gmail]/Important"))
+        return self.get_mailbox("[Gmail]/Important")
 
+    @property
     def mail_domain(self):
         return self.username.split('@')[-1]
