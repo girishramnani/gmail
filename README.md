@@ -152,6 +152,14 @@ There are also few shortcuts to mark messages quickly:
     email.star()
     email.unstar()
 
+
+### Significant API changes in May 2018
+
+* Mailboxes are now accessed via properties (e.g. `inbox = g.inbox` instead of `g.inbox()`) rather than methods.
+* For clarity, the `Mailbox.mail()` method is now called `Mailbox.get_mail()` to emphasize that it's a method, not a property.
+* Similarly, `Mailbox.label()` is now `Mailbox.get_label()`.
+* `uid` is now supported as a keyword argument for `Mailbox.get_mail()`.
+
 ### Roadmap
 
 * Write tests
