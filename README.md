@@ -158,6 +158,7 @@ There are also few shortcuts to mark messages quickly:
 * Mailboxes are now accessed via properties (e.g. `inbox = g.inbox` instead of `g.inbox()`) rather than methods.
 * For clarity, the `Mailbox.mail()` method is now called `Mailbox.get_mail()` to emphasize that it's a method, not a property.
 * Similarly, `Mailbox.label()` is now `Mailbox.get_label()`.
+* There's no need to call `fetch()` on a `Message`, since any attempt to access an attribute of a `Message` will automatically trigger `fetch()`, lazily loading the data for that `Message` courtesy of `Message.__getattr__`.
 * `uid` is now supported as a keyword argument for `Mailbox.get_mail()`.
 
 ### Roadmap
