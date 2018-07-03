@@ -63,11 +63,9 @@ class Message:
         return f'<Message {self.uid}>'
 
     def __getattribute__(self, item):
-        attr = getattr(self, item)
-        if attr is None:
-            self.fetch()
-            attr = getattr(self, item)
-        return attr
+        if not object.__getattribute__(self, item):
+            self._fetch()
+        return object.__getattribute__(self, item)
 
     @staticmethod
     def create(subject,
@@ -254,12 +252,11 @@ class Message:
 
         ] if a]
 
-    def fetch(self):
-        if not self.message:
-            response, results = self.gmail.imap.uid(
-                'FETCH', self.uid, '(BODY.PEEK[] FLAGS X-GM-THRID X-GM-MSGID X-GM-LABELS)')
+    def _fetch(self):
+        _, results = self.gmail.imap.uid(
+            'FETCH', self.uid, '(BODY.PEEK[] FLAGS X-GM-THRID X-GM-MSGID X-GM-LABELS)')
 
-            self.parse(results[0])
+        self.parse(results[0])
 
         return self.message
 

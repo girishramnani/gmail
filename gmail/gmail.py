@@ -99,6 +99,9 @@ class Gmail:
 
     def get_mailbox(self, mailbox_name):
 
+        if not self.logged_in:
+            raise Exception('You must log in first.')
+
         quoted_mailbox_name = None
 
         if sys.version_info[0] == 3:
