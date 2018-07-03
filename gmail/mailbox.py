@@ -15,9 +15,6 @@ class Mailbox:
     def __repr__(self):
         return '<Mailbox {}>'.format(self.external_name)
 
-    def __len__(self):
-        return len(self.messages)
-
     @property
     def messages(self):
         return self._messages or self.get_mail()
