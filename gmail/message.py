@@ -62,7 +62,7 @@ class Message:
     def __repr__(self):
         return f'<Message {self.uid}>'
 
-    def __getattr__(self, item):
+    def __getattribute__(self, item):
         self.fetch()
         return getattr(self, item)
 
