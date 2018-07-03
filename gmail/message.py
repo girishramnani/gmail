@@ -63,8 +63,11 @@ class Message:
         return f'<Message {self.uid}>'
 
     def __getattribute__(self, item):
-        self.fetch()
-        return getattr(self, item)
+        attr = getattr(self, item)
+        if attr is None:
+            self.fetch()
+            attr = getattr(self, item)
+        return attr
 
     @staticmethod
     def create(subject,
