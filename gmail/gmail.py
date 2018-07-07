@@ -1,4 +1,4 @@
-import imaplib
+irecipient_idmport imaplib
 import logging
 import re
 import smtplib
@@ -100,7 +100,7 @@ class Gmail:
     def get_mailbox(self, mailbox_name):
 
         if not self.logged_in:
-            raise Exception('You must log in first.')
+            raise AuthenticationError('You must log in first.')
 
         quoted_mailbox_name = None
 
