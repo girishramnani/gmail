@@ -10,10 +10,14 @@ class Mailbox:
         self.name = name
         self.gmail = gmail
         self.date_format = "%d-%b-%Y"
-        self.messages = {}
+        self._messages = {}
 
     def __repr__(self):
         return '<Mailbox {}>'.format(self.external_name)
+
+    @property
+    def messages(self):
+        return self._messages or self.get_mail()
 
     @property
     def external_name(self):
@@ -94,14 +98,8 @@ class Mailbox:
                     if _f]
 
             for uid in uids:
-                if uid not in self.messages:
-                    self.messages[uid] = Message(self, uid)
-                emails.append(self.messages[uid])
+                if uid not in self._messages:
+                    self._messages[uid] = Message(self, uid)
+                emails.append(self._messages[uid])
 
         return emails
-
-    def count(self, **kwargs):
-        return len(self.get_mail(**kwargs))
-
-    def cached_messages(self):
-        return self.messages

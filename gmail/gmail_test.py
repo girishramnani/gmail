@@ -42,7 +42,6 @@ def test_that_emails_have_content():
     assert len(emails) > 0
 
     first_email = emails[0]
-    first_email.fetch()
     assert first_email.subject is not None
     assert first_email.body is not None
 

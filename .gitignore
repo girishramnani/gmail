@@ -94,3 +94,6 @@ ENV/
 # pycharm
 *.xml
 .idea/
+
+# vi
+*.swp
