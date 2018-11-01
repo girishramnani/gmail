@@ -15,10 +15,17 @@ Heavily inspired by [Kriss "nu7hatch" Kowalik's GMail for Ruby library](https://
 
 ## Installation
 
-For now, installation is manual (`pip` support not yet implemented). Supports python 2 and pypy.
+This pip command seems to work according to https://stackoverflow.com/questions/15268953/how-to-install-python-package-from-github
+
+```
+pip install git+git://github.com/girishramnani/gmail.git
+```
+
+~~For now, installation is manual (`pip` support not yet implemented).~~ Supports python 2 and pypy.
 `pip` compatible distribution files can be built on your machine with `python setup.py sdist` 
 
 
+Use this to install manually:
 ```
 
 git clone git://github.com/girishramnani/gmail.git
